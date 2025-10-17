@@ -759,7 +759,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       showPopup('Logged out successfully!', 'success');
-      window.location.href = '/index.html';
+      window.location.href = './index.html';
     });
   }
 });

@@ -53,7 +53,7 @@ if (loginForm) {
     }
 
     showPopupAuthentication("Welcome back!");
-      setTimeout(() => window.location.href = "app.html", 1000);
+      setTimeout(() => window.location.href = "./app.html", 1000);
   });
 }
 
@@ -90,6 +90,6 @@ if (signupForm) {
     }
 
       showPopupAuthentication("Sign-up successful!");      
-      setTimeout(() => window.location.href = "app.html", 1000);
+      setTimeout(() => window.location.href = "./app.html", 1000);
   });
 }
