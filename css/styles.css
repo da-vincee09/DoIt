@@ -944,6 +944,24 @@ body.dark-mode #logoutBtn:hover {
     padding: 1.5rem 2rem;
   }
 
+  .calendar-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.8rem;
+    box-sizing: border-box;
+    overflow-x: auto;
+  }
+
+  .calendar-grid {
+    gap: 4px;
+  }
+
+  .calendar-day {
+    padding: 6px 0;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
   .task-cards {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
@@ -1131,24 +1149,6 @@ body.dark-mode .mobile-header {
     height: 140px;
     font-size: 0.80rem;
     padding: 0.75rem;
-  }
-
-  .calendar-container {
-    width: 100%;
-    max-width: 100%;
-    padding: 0.8rem;
-    box-sizing: border-box;
-    overflow-x: auto;
-  }
-
-  .calendar-grid {
-    gap: 4px;
-  }
-
-  .calendar-day {
-    padding: 6px 0;
-    font-size: 0.75rem;
-    text-align: center;
   }
 
   /* Buttons responsive */

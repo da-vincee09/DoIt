@@ -331,7 +331,7 @@ function subscribeToTaskChanges() {
       }
     )
     .subscribe((status) => {
-      if (status === 'SUBSCRIBED') console.log('📡 Listening for task changes...');
+      if (status === 'SUBSCRIBED') console.log('Listening for task changes...');
     });
 }
 
@@ -669,6 +669,7 @@ async function showTasksForDate(date) {
 
   popup.style.display = 'block';
 }
+
 
 // ----------------------------
 // THEME TOGGLING WITH PERSISTENCE
