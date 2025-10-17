@@ -1,0 +1,1198 @@
+/* 
+  App: DoIt
+  Author: Rodini Vince Rosario
+  Description: Styles for DoIt app including tasks, calendar, sticky notes, and dark/light theme.
+  Date: 2025-10-17
+*/
+
+/* ===== GLOBAL STYLES ===== */
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #D5E4CA;
+}
+
+
+/* ===== POPUPS ===== */
+.popup {
+  position: fixed; /* relative to sticky-container */
+  top: 10px;
+  right: 10px;
+  background: #333;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 100;
+}
+
+
+.popup.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.popup.success { background: #4caf50; }
+.popup.error   { background: #f44336; }
+.popup.warning { background: #ff9800; }
+
+/* Auth Popup Base */
+.popupAuth {
+  position: fixed;
+  bottom: 40px;            /* distance from bottom */
+  left: 50%;
+  transform: translateX(-50%) translateY(20px); /* start slightly below */
+  min-width: 280px;
+  max-width: 400px;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  text-align: center;
+  background-color: #444;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+  z-index: 9999;
+}
+
+.popupAuth.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0); /* slides up */
+  pointer-events: auto;
+}
+
+.popupAuth.success { background-color: #4caf50; }
+.popupAuth.error   { background-color: #e74c3c; }
+.popupAuth.warning { background-color: #ff9800; }
+
+.popupAuth::before {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.popup-content {
+  background: #fff;
+  color: #333;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  text-align: center;
+  max-width: 350px;
+}
+
+/* Buttons */
+.popup-buttons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.confirm-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #ccc;
+  color: #222;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.confirm-btn:hover {
+  background: #ff6b5c;
+}
+
+.cancel-btn:hover {
+  background: #b5b5b5;
+}
+
+.popup-task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f9f9;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+}
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.delete-task-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.delete-task-btn:hover {
+  transform: scale(1.2);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: #82907b;
+  color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.2);
+}
+
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sidebar-header h2 {
+  color: #fae0a2;              
+  font-size: 2rem;             
+  font-weight: 700;            
+  letter-spacing: 1px;         
+  margin: 0.5rem 0;
+  text-transform: uppercase;   
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.15); 
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.sidebar-nav li {
+  margin: 1.2rem 0;
+}
+
+.sidebar-nav li a {
+  text-decoration: none;
+  color: #E0E0E0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: block;
+  padding: 0.6rem 1rem;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.sidebar-nav li a:hover {
+  background: #6f7d68;
+  color: #dcf6ce;
+}
+
+.sidebar-divider {
+  border: none;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15); 
+  width: 60%;
+  margin: 1rem auto;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  text-align: left;
+  color: #333;
+  overflow-y: auto;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.main-content h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.main-content p {
+  color: #666;
+}
+
+.main-content section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.main-content section:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.main-content section h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #465046;
+  margin-bottom: 1rem;
+  border-left: 4px solid #fae0a2;
+  padding-left: 0.75rem;
+}
+
+/* ===== TASK CARDS & LISTS ===== */
+.task-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.task-list :checked + label {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.task-item {
+  background: #ffffff;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  transition: background 0.3s ease;
+}
+
+.task-item:hover {
+  background: #f3f5f1;
+}
+
+.task-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.task-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.task-card h3 {
+  margin: 0 0 0.5rem;
+  color: #465046;
+}
+
+.due-date {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #82907b;
+}
+
+/* ===== FORMS & INPUTS ===== */
+.add-task input[type="date"] {
+  padding: 0.8rem 1rem;
+  border: 2px solid #d8dfd3;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+  color: #333;
+}
+
+#taskInputDetails {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 2px solid #d8dfd3;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+  color: #333;
+  margin-right: 0.75rem;
+}
+
+#add .add-task {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+#taskInput {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 2px solid #d8dfd3;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+  color: #333;
+}
+
+#taskInput:focus {
+  border-color: #82907b;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(130, 144, 123, 0.2);
+}
+
+#add button {
+  background: #82907b;
+  color: #f9fafb;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+#add button:hover {
+  background: #6f7d68;
+  transform: translateY(-2px);
+}
+
+.delete-task-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.delete-task-btn:hover {
+  transform: scale(1.2);
+  color: #ff6b5c;
+}
+
+/* ===== STICKY NOTES ===== */
+.sticky-wall {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sticky-note {
+  background: #fff9c4;               
+  border: 2px solid #f1e582;
+  padding: 1rem;
+  width: 180px;
+  height: 180px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transform: rotate(var(--rotation, -1deg)) scale(1);
+  transition: transform 0.2s ease;
+}
+
+.sticky-note {
+  transform: rotate(var(--rotation)) scale(1);
+  transition: transform 0.2s ease;
+}
+
+.sticky-note:hover {
+  transform: rotate(calc(var(--rotation, -1deg) - 2deg)) scale(1.03);
+}
+
+.sticky-note p {
+  outline: none;
+  word-wrap: break-word;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  color: #e74c3c;
+}
+
+#addNoteBtn {
+  background: #ffeb3b;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  margin-left: 1rem;
+}
+
+#addNoteBtn:hover {
+  background: #fdd835;
+}
+
+/* ===== LOGIN PAGE ===== */
+.login-body {
+  font-family: 'Inter', sans-serif;
+  background-color: #D9E9CF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.login-card {
+  background-color: #ffffff;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card form {
+  width: 100%;
+  max-width: 320px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+}
+
+.app-title {
+  color: #82907b;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #465046;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  border: 1.5px solid #cbd5c0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.login-card input:focus {
+  border-color: #82907b;
+  outline: none;
+}
+
+.login-card button {
+  width: 100%;
+  background-color: #82907b;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.login-card button:hover {
+  background-color: #6f7d68;
+  transform: scale(1.02);
+}
+
+.footer-text {
+  margin-top: 1.5rem;
+  color: #465046;
+  font-size: 0.9rem;
+}
+
+.footer-text a {
+  color: #fae0a2;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-text a:hover {
+  text-decoration: underline;
+}
+
+#logoutBtn {
+  background: #82907b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+#logoutBtn:hover {
+  background: #6f7d68;
+  transform: translateY(-2px);
+}
+
+/* ===== CALENDAR ===== */
+#calendar {
+  position: relative; /* this is crucial */
+}
+
+
+.calendar-container {
+  width: 100%;
+  max-width: 600px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-day {
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  background: #f8f9fa;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.calendar-day:hover {
+  background: #e3f2fd;
+}
+
+.calendar-day.has-task {
+  background: #fff3cd;
+  border: 2px solid #ffeb3b;
+}
+
+.calendar-popup {
+  position: absolute;   
+  top: 60px;            
+  right: 20px;          
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  padding: 12px;
+  width: 240px;
+  z-index: 10;
+}
+
+
+/* ===== SETTINGS  ===== */
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  font-size: 1rem;
+  color: #465046;
+}
+
+/* ===== DARK MODE ===== */
+body.dark-mode {
+  background-color: #1a1d1a;  
+  color: #e4e6e4;
+}
+
+/* Sidebar */
+body.dark-mode .sidebar {
+  background-color: #232823;  
+  color: #f5f7f5;
+  border-right: 1px solid #2f352f;
+}
+
+/* Dark mode: input fields for Add Task */
+body.dark-mode #taskInput,
+body.dark-mode #taskInputDetails,
+body.dark-mode input[type="date"],
+body.dark-mode textarea {
+  background-color: #2a2a2a;   
+  color: #f5f5f5;              
+  border: 2px solid #444;      
+}
+
+/* Dark mode: Add Task button */
+body.dark-mode #addBtn {
+  background-color: #374237;   
+  color: #f5f5f5;
+  border: 1px solid #505850;
+}
+
+/* Dark mode: input placeholders */
+body.dark-mode input[type="text"]::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #aaa; 
+}
+
+/* Dark mode: input focus states */
+body.dark-mode input[type="text"]:focus,
+body.dark-mode input[type="date"]:focus,
+body.dark-mode textarea:focus {
+  border-color: #82907b;       
+  box-shadow: 0 0 0 3px rgba(130, 144, 123, 0.25);
+  outline: none;
+}
+
+/* Sidebar Header */
+body.dark-mode .sidebar-header h2 {
+  color: #fae0a2; 
+}
+
+/* Sidebar Links */
+body.dark-mode .sidebar a {
+  color: #bfc9b9;
+}
+
+/* Sidebar Links Hover */
+body.dark-mode .sidebar a:hover {
+  background: #2f352f;
+  color: #fae0a2;
+}
+
+/* Main content */
+body.dark-mode .main-content {
+  background-color: #1c1f1c;
+  color: #e6e6e6;
+}
+
+/* Sections */
+body.dark-mode .main-content section {
+  background: #262a26; 
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* Section headers */
+body.dark-mode .main-content section h2 {
+  color: #d7dbc7;
+  border-left: 4px solid #b3c296; 
+}
+
+/* Task cards — applies to all sections */
+body.dark-mode .task-card {
+  background-color: #2e342e;
+  border: 1px solid #404840;
+  color: #f0f0f0;
+}
+
+/* Specific styling for Upcoming Tasks section */
+body.dark-mode #upcoming .task-card h3,
+body.dark-mode #upcoming .task-card p,
+body.dark-mode #upcoming .task-card .description {
+  color: #e9eee9 !important; 
+}
+
+/* Due date styling for Upcoming Tasks */
+body.dark-mode #upcoming .task-card .due-date {
+  color: #b8c4b8 !important; /* subtle greenish gray */
+}
+
+/* Task items */
+body.dark-mode .task-item {
+  background: #2b302b;
+  border: 1px solid #3c433c;
+}
+
+/* Task item hover effect */
+body.dark-mode .task-item:hover {
+  background: #353b35;
+}
+
+/* Dark mode — Add Note button */
+body.dark-mode #addNoteBtn {
+  background-color: #555b45;      
+  color: #f5f5f5;
+  border: 1px solid #707a64;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+/* Dark mode — Add Note button hover */
+body.dark-mode #addNoteBtn:hover {
+  background-color: #65705b;      
+  transform: translateY(-2px);
+}
+
+/* Calendar Container */
+body.dark-mode .calendar-container {
+  background-color: #242824;
+  border: 1px solid #3c433c;
+}
+
+/* Dark mode - Calendar Days */
+body.dark-mode .calendar-day {
+  background-color: #2b302b;
+  border: 1px solid #3a3f3a;
+  color: #e6e6e6;
+}
+
+/* Dark mode - Calendar Day Hover */
+body.dark-mode .calendar-day.has-task {
+  background-color: #44503d;
+  border: 2px solid #9dc78a;
+}
+
+/* Dark mode - Calendar Popup */
+body.dark-mode .calendar-popup {
+  background-color: #2a2e2a;       
+  color: #f2f2f2;                  
+  border: 1px solid #3d443d;       
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6); 
+}
+
+/* Calendar Popup Header */
+body.dark-mode .calendar-popup h4 {
+  color: #d7dbc7;                  
+  border-bottom: 1px solid #3c433c;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+/* Calendar Popup Tasks */
+body.dark-mode .calendar-popup #popupTasks {
+  color: #e4e6e4;                  
+}
+
+/* Calendar Popup Button */
+body.dark-mode .calendar-popup button {
+  background-color: #374237;       
+  color: #f5f5f5;
+  border: 1px solid #505850;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+/* Calendar Popup Button Hover */
+body.dark-mode .calendar-popup button:hover {
+  background-color: #465346;
+}
+
+/* Popups */
+body.dark-mode .delete-task-btn {
+  color: #ff7661;
+}
+
+/* Delete button hover */
+body.dark-mode .delete-task-btn:hover {
+  color: #ff9985;
+}
+
+/* Popup overlay */
+body.dark-mode .popup-task-item {
+  background: #2b302b;
+}
+
+/* Dark mode popup */
+body.dark-mode .popup-content {
+  background: #2f322f;
+  color: #f5f5f5;
+}
+
+/* Confirm button */
+body.dark-mode .cancel-btn {
+  background: #444;
+  color: #eee;
+}
+
+/* Confirm button hover */
+body.dark-mode .cancel-btn:hover {
+  background: #555;
+}
+
+/* Cancel button */
+body.dark-mode .popup {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Buttons */
+body.dark-mode button {
+  background-color: #374237;
+  color: #f8f8f8;
+  border: 1px solid #505850;
+}
+
+/* Buttons hover */
+body.dark-mode button:hover {
+  background-color: #465346;
+}
+
+/* Settings text */
+body.dark-mode .settings-group {
+  color: #c8cfc8;
+}
+
+/* Dark mode Logout button */
+body.dark-mode #logoutBtn {
+  background-color: #374237;
+  color: #f8f8f8;
+  border: 1px solid #505850;
+}
+
+/* Dark mode Logout button hover */
+body.dark-mode #logoutBtn:hover {
+  background-color: #465346;
+}
+
+/* ====== RESPONSIVE STYLES ====== */
+@media (max-width: 1200px) { /* Large tablets and small desktops */
+  .sidebar {
+    width: 200px;
+    padding: 1.5rem 0.5rem;
+  }
+
+  .main-content {
+    margin-left: 200px;
+    width: calc(100% - 200px);
+    padding: 1.5rem 2rem;
+  }
+
+  .task-cards {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 1080px) { /* Medium tablets */
+   #add .add-task {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  #taskInputDetails, #taskInput, .add-task input[type="date"] {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  #add button {
+    width: 100%;
+  } 
+}
+
+@media (max-width: 992px) { /* Small tablets */
+  .sidebar {
+    width: 180px;
+    padding: 1rem 0.5rem;
+  }
+
+  .main-content {
+    margin-left: 180px;
+    width: calc(100% - 180px);
+    padding: 1rem 1.5rem;
+  }
+
+  .task-cards {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .login-card {
+    max-width: 350px;
+    padding: 2rem;
+  } 
+}
+
+@media (max-width: 768px) { /* Large phones and small tablets */
+  .sidebar {
+    position: fixed;
+    left: -240px; 
+    top: 0;
+    width: 220px;
+    height: 100%;
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.active {
+    left: 0; /* slide in */
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .task-cards {
+    grid-template-columns: 1fr; 
+  }
+
+  .sticky-wall {
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .login-card {
+    width: 80%;
+    max-width: 400px;
+    padding: 1.8rem;
+  }
+
+  .popupAuth {
+    width: 90%;
+    max-width: 320px;
+    font-size: 0.9rem;
+  }
+}
+
+/* ===== Mobile Header ===== */
+.mobile-header {
+  display: none; 
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #82907b;
+  color: #fff;
+  text-align: center;       
+  font-weight: 700;
+  font-size: 0.75rem;
+  line-height: normal;      
+  padding: 0;               
+  margin: 0;                
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  z-index: 1000;
+  display: none;            
+}
+
+/* ===== Mobile Header Dark Mode ===== */
+body.dark-mode .mobile-header {
+  background-color: #2a2e2a;  
+  color: #e4e6e4;            
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+@media (max-width: 576px) { /* Mobile phones */
+  .mobile-header {
+    display: flex;            
+    align-items: center;      
+    justify-content: center;  
+  }
+
+  .main-content {
+    margin-top: 50px;         
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%; /* hide sidebar */
+    width: 200px;
+    height: 100%;
+    z-index: 999;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .main-content section {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+  }
+
+  #add .add-task {
+    display: flex;
+    flex-direction: column; 
+    gap: 0.5rem;
+  }
+
+  #taskInput,
+  #taskInputDetails,
+  .add-task input[type="date"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  #add button {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .task-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .sticky-wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.5rem;
+    justify-items: center;
+    padding: 0;
+  }
+
+  .sticky-note {
+    width: 140px;
+    height: 140px;
+    font-size: 0.80rem;
+    padding: 0.75rem;
+  }
+
+  .calendar-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.8rem;
+    box-sizing: border-box;
+    overflow-x: auto;
+  }
+
+  .calendar-grid {
+    gap: 4px;
+  }
+
+  .calendar-day {
+    padding: 6px 0;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  /* Buttons responsive */
+  #add button,
+  #logoutBtn {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  #addNoteBtn {
+    margin: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .login-card {
+    width: 80%;
+    max-width: none;
+    padding: 2rem 1.5rem;
+  }
+
+  .login-card input,
+  .login-card button {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .popupAuth {
+    bottom: 15px;
+    padding: 0.7rem 1rem;
+    min-width: 85%;
+    max-width: 95%;
+    font-size: 0.85rem;
+  }
+
+  .footer-text {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) { /* Small mobile phones */
+  .popupAuth {
+    min-width: 90%;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .login-card {
+    padding: 1.5rem 1rem;
+  }
+
+  #add .add-task {
+    gap: 0.4rem;
+  }
+
+  #taskInput,
+  #taskInputDetails,
+  .add-task input[type="date"] {
+    font-size: 0.85rem;
+  }
+
+  .sticky-note {
+    width: 120px;
+    height: 120px;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  #add button,
+  #logoutBtn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .calendar-day {
+    font-size: 0.7rem;
+    padding: 4px 0;
+  }
+}
