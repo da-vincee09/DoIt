@@ -299,37 +299,39 @@ function showPopup(message, type = "warning") {
   setTimeout(() => popup.classList.remove("show"), 3000); // auto-hide after 3s
 }
 
-// Real-time listener for new task inserts/updates/deletes
+// ----------------------------
+// Subscribe to changes (reactive)
+// ----------------------------
 function subscribeToTaskChanges() {
-  const today = getToday();
-
-  const channel = supabase
-    .channel('tasks-changes') // ✅ custom channel name (not schema)
+  supabase
+    .channel('tasks-changes')
     .on(
       'postgres_changes',
-      {
-        event: '*', // listen to INSERT, UPDATE, DELETE
-        schema: 'public',
-        table: 'tasks',
-      },
-      (payload) => {
+      { event: '*', schema: 'public', table: 'tasks' },
+      async (payload) => {
         const task = payload.new || payload.old;
-
         if (!task) return;
 
-        // ✅ Refresh only the relevant section
-        if (task.due_date === today) {
-          loadTodayTasks();
-        } else if (task.due_date > today) {
-          loadUpcomingTasks();
-          renderCalendar();
+        if (payload.eventType === 'INSERT') allTasks.push(task);
+        else if (payload.eventType === 'UPDATE') {
+          const index = allTasks.findIndex(t => t.id === task.id);
+          if (index !== -1) allTasks[index] = task;
+        } else if (payload.eventType === 'DELETE') {
+          allTasks = allTasks.filter(t => t.id !== task.id);
+        }
+
+        await loadTodayTasks();
+        await loadUpcomingTasks();
+        await renderCalendar();
+
+        if (popup.style.display === 'block') {
+          const date = popupDate.textContent.split('Tasks for ')[1];
+          showTasksForDate(date);
         }
       }
     )
     .subscribe((status) => {
-      if (status === 'SUBSCRIBED') {
-        console.log('📡 Listening for task changes in real time...');
-      }
+      if (status === 'SUBSCRIBED') console.log('📡 Listening for task changes...');
     });
 }
 
@@ -542,7 +544,7 @@ async function loadStickyNotes() {
 
 
 // ----------------------------
-// CALENDAR MANAGEMENT
+// CALENDAR MANAGEMENT (Reactive)
 // ----------------------------
 const calendarGrid = document.querySelector('.calendar-grid');
 const monthYearDisplay = document.getElementById('monthYear');
@@ -551,15 +553,14 @@ const popupDate = document.getElementById('popupDate');
 const popupTasks = document.getElementById('popupTasks');
 const closePopup = document.getElementById('closePopup');
 
-let currentMonth = new Date(); // starts at current month
+let currentMonth = new Date();
+let allTasks = []; // global task array for reactive popup
 
 // Navigate months
 document.getElementById('prevMonth').addEventListener('click', () => {
   currentMonth.setMonth(currentMonth.getMonth() - 1);
   renderCalendar();
 });
-
-// Navigate months
 document.getElementById('nextMonth').addEventListener('click', () => {
   currentMonth.setMonth(currentMonth.getMonth() + 1);
   renderCalendar();
@@ -570,72 +571,67 @@ closePopup.addEventListener('click', () => {
   popup.style.display = 'none';
 });
 
-// Render calendar for current month
+// ----------------------------
+// Render calendar
+// ----------------------------
 async function renderCalendar() {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
   monthYearDisplay.textContent = currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
   calendarGrid.innerHTML = '';
 
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const daysInMonth = lastDay.getDate();
-
-  // ✅ Get logged-in user
+  // Get current user
   const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError || !user) {
-    console.error('User not logged in');
-    return;
-  }
+  if (userError || !user) return console.error('User not logged in');
 
-  // Load only this user’s tasks
+  // Fetch tasks for this user
   const { data: tasks, error } = await supabase
     .from('tasks')
     .select('*')
     .eq('uid', user.id);
 
-  if (error) {
-    console.error('Error loading tasks:', error.message);
-    return;
-  }
+  if (error) return console.error('Error loading tasks:', error.message);
 
-  for (let i = 1; i <= daysInMonth; i++) {
+  allTasks = tasks; // keep global array
+
+  const lastDay = new Date(year, month + 1, 0).getDate();
+
+  for (let i = 1; i <= lastDay; i++) {
     const date = new Date(year, month, i);
-    const formatted = formatDateLocal(date); // ✅ use local format
+    const formatted = formatDateLocal(date);
 
     const dayEl = document.createElement('div');
     dayEl.classList.add('calendar-day');
     dayEl.textContent = i;
 
-    const hasTask = tasks.some(t => t.due_date === formatted);
-    if (hasTask) dayEl.classList.add('has-task');
+    if (allTasks.some(t => t.due_date === formatted)) dayEl.classList.add('has-task');
 
-    // Pass refresh function for instant update
-    dayEl.addEventListener('click', () =>
-      showTasksForDate(formatted, tasks, renderCalendar)
-    );
+    dayEl.addEventListener('click', () => showTasksForDate(formatted));
 
     calendarGrid.appendChild(dayEl);
   }
 }
 
-// Show tasks for selected date in popup
-async function showTasksForDate(date, allTasks, refreshCalendar) {
-  const tasksForDate = allTasks.filter(t => t.due_date === date);
+// ----------------------------
+// Show tasks in popup
+// ----------------------------
+async function showTasksForDate(date) {
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData?.user?.id;
 
   popupDate.textContent = `Tasks for ${date}`;
   popupTasks.innerHTML = '';
 
+  const tasksForDate = allTasks.filter(t => t.due_date === date);
+
   if (tasksForDate.length === 0) {
     popupTasks.innerHTML = '<p>No tasks for this date 🎉</p>';
   } else {
-    for (const task of tasksForDate) {
+    tasksForDate.forEach(task => {
       const taskRow = document.createElement('div');
       taskRow.classList.add('popup-task-item');
       taskRow.innerHTML = `
-        <p>📝 ${task.task}</p>
+        <p>${task.task}</p>
         <button class="delete-task-btn" title="Delete task">🗑️</button>
       `;
 
@@ -651,41 +647,28 @@ async function showTasksForDate(date, allTasks, refreshCalendar) {
           .eq('uid', userId);
 
         if (deleteError) {
-          console.error('Error deleting task:', deleteError);
           showPopup('Failed to delete task.', 'error');
-        } else {
-          // Instantly remove from popup
-          taskRow.remove();
-          showPopup('Task deleted successfully!', 'success');
-
-          // Remove from local array
-          const index = allTasks.findIndex(t => t.id === task.id);
-          if (index !== -1) allTasks.splice(index, 1);
-
-          // Re-render calendar
-          if (typeof refreshCalendar === 'function') {
-            await refreshCalendar();
-          }
-
-          // Refresh Today’s task list immediately
-          await loadTodayTasks();
-          await loadUpcomingTasks();
-
-          // If no tasks left, show message
-          if (!popupTasks.querySelector('.popup-task-item')) {
-            popupTasks.innerHTML = '<p>No tasks for this date 🎉</p>';
-          }
+          return;
         }
+
+        showPopup('Task deleted successfully!', 'success');
+
+        // Remove task from global array
+        allTasks = allTasks.filter(t => t.id !== task.id);
+
+        // Refresh popup, today/upcoming lists, and calendar
+        showTasksForDate(date);
+        await loadTodayTasks();
+        await loadUpcomingTasks();
+        await renderCalendar();
       });
 
-
-    popupTasks.appendChild(taskRow);
+      popupTasks.appendChild(taskRow);
+    });
   }
-}
 
   popup.style.display = 'block';
 }
-
 
 // ----------------------------
 // THEME TOGGLING WITH PERSISTENCE
@@ -788,3 +771,4 @@ loadStickyNotes(); // load sticky notes
 loadTodayTasks(); // load today’s tasks
 loadUpcomingTasks(); // load upcoming tasks
 subscribeToTaskChanges(); // start real-time listener
+

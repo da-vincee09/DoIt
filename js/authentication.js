@@ -31,6 +31,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ----------------------------
 // AUTHENTICATION HANDLERS
 // ----------------------------
+
 // Login handler
 
 const loginForm = document.getElementById("loginForm");
