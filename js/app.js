@@ -122,7 +122,6 @@ addBtn.addEventListener('click', async () => {
     showPopup('Task added successfully!', 'success')
     await loadTodayTasks()
     await loadUpcomingTasks()
-    await renderCalendar()
   }
 })
 
@@ -467,7 +466,7 @@ function createStickyElement(noteData) {
       showPopup(`Max ${MAX_LENGTH} characters allowed!`, "warning");
     }
   });
-  
+
   const delBtn = document.createElement("button");
     delBtn.textContent = "✖";
     delBtn.className = "delete-btn";
