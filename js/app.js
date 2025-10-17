@@ -451,6 +451,23 @@ function createStickyElement(noteData) {
   p.textContent = noteData.content;
   note.appendChild(p);
 
+  // ✅ Limit characters while editing loaded notes
+  p.addEventListener("input", () => {
+    if (p.textContent.length > MAX_LENGTH) {
+      p.textContent = p.textContent.slice(0, MAX_LENGTH);
+
+      // Move caret to end
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.setStart(p.childNodes[0] || p, p.textContent.length);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+
+      showPopup(`Max ${MAX_LENGTH} characters allowed!`, "warning");
+    }
+  });
+  
   const delBtn = document.createElement("button");
     delBtn.textContent = "✖";
     delBtn.className = "delete-btn";

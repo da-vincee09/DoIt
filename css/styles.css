@@ -1041,18 +1041,14 @@ body.dark-mode #logoutBtn:hover {
     padding: 1.8rem;
   }
 
+  .popup {
+    top: 60px; /* mobile header height + 10px padding */
+  }
+
   .popupAuth {
     width: 90%;
     max-width: 320px;
     font-size: 0.9rem;
-  }
-
-  #popup {
-    top: 60px; /* adjust to your header height */
-    left: 50%;
-    transform: translateX(-50%);
-    position: fixed; /* stay visible on scroll */
-    z-index: 1000;
   }
 }
 
