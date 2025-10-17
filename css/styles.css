@@ -1046,6 +1046,14 @@ body.dark-mode #logoutBtn:hover {
     max-width: 320px;
     font-size: 0.9rem;
   }
+
+  #popup {
+    top: 60px; /* adjust to your header height */
+    left: 50%;
+    transform: translateX(-50%);
+    position: fixed; /* stay visible on scroll */
+    z-index: 1000;
+  }
 }
 
 /* ===== Mobile Header ===== */
@@ -1177,7 +1185,7 @@ body.dark-mode .mobile-header {
     box-sizing: border-box; /* ensures padding doesn’t overflow */
     font-size: 0.9rem;
   }
-  
+
   .popupAuth {
     bottom: 15px;
     padding: 0.7rem 1rem;
