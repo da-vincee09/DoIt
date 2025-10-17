@@ -120,7 +120,9 @@ addBtn.addEventListener('click', async () => {
     showPopup('Failed to save task: ' + error.message, 'error')
   } else {
     showPopup('Task added successfully!', 'success')
-    loadTodayTasks()
+    await loadTodayTasks()
+    await loadUpcomingTasks()
+    await renderCalendar()
   }
 })
 
