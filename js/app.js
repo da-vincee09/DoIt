@@ -736,32 +736,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Logout button: save theme before logging out
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      const isDark = document.body.classList.contains('dark-mode');
-
-      if (user) {
-        const { error } = await supabase
-          .from('settings')
-          .upsert(
-            { uid: user.id, theme: isDark ? 'dark' : 'light' },
-            { onConflict: 'uid' }
-          );
-        if (error) console.error('Failed to save theme before logout:', error.message);
+// Logout button: save theme before logging out
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      // Get currently logged-in user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        showPopup('No user logged in.', 'warning');
+        return;
       }
 
+      // Save theme before logout
+      const isDark = document.body.classList.contains('dark-mode');
+      const { error: themeError } = await supabase
+        .from('settings')
+        .upsert(
+          { uid: user.id, theme: isDark ? 'dark' : 'light' },
+          { onConflict: 'uid' }
+        );
+      if (themeError) console.error('Failed to save theme before logout:', themeError.message);
+
+      // Sign out without redirect
       const { error: logoutError } = await supabase.auth.signOut();
       if (logoutError) {
         showPopup('Failed to log out: ' + logoutError.message, 'error');
         return;
       }
 
+      // Redirect manually (works on GitHub Pages)
       showPopup('Logged out successfully!', 'success');
-      window.location.href = './index.html';
-    });
-  }
+      setTimeout(() => {
+        window.location.href = './index.html';
+      }, 500); // small delay for popup
+    } catch (err) {
+      console.error('Logout failed:', err);
+      showPopup('Logout failed. Check console for details.', 'error');
+    }
+  });
+}
 });
 
 // ----------------------------

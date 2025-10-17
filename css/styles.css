@@ -1165,17 +1165,19 @@ body.dark-mode .mobile-header {
   }
 
   .login-card {
-    width: 80%;
+    width: 90%;
     max-width: none;
-    padding: 2rem 1.5rem;
+    padding: 1.5rem; 
+    box-sizing: border-box; 
   }
 
   .login-card input,
   .login-card button {
-    width: 90%;
+    width: 100%;
+    box-sizing: border-box; /* ensures padding doesn’t overflow */
     font-size: 0.9rem;
   }
-
+  
   .popupAuth {
     bottom: 15px;
     padding: 0.7rem 1rem;
